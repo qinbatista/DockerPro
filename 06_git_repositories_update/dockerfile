@@ -1,0 +1,17 @@
+FROM debian:9-slim
+ADD git_update.py /
+ADD id_rsa /
+ADD id_rsa.pub /
+ADD config /
+
+RUN apt-get update
+RUN apt-get -y install python3 git
+RUN mkdir ~/.ssh/
+RUN touch ~/.ssh/authorized_keys
+RUN mv id_rsa ~/.ssh/
+RUN mv id_rsa.pub ~/.ssh/
+RUN mv config ~/.ssh/
+RUN chmod 600 ~/.ssh/id_rsa
+
+VOLUME ["/root/repositories"]
+CMD [ "python3" ,"/git_update.py"]

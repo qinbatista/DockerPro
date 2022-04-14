@@ -1,0 +1,16 @@
+FROM python:3.7-slim
+RUN  sed -i s@/archive.ubuntu.com/@/mirrors.aliyun.com/@g /etc/apt/sources.list
+RUN  sed -i s@/deb.debian.org/@/mirrors.aliyun.com/@g /etc/apt/sources.list
+ENV  PIP_SITE http://mirrors.aliyun.com/pypi/simple/
+ENV  PIP_HOST mirrors.aliyun.com
+RUN  apt-get update && apt-get install -y nginx
+COPY /sandbox/login_systeam.conf /etc/nginx/conf.d/login_systeam.conf
+ADD /sandbox/ssl_cert /ssl_cert
+ADD run.sh /
+RUN chmod +x run.sh
+ADD login_systeam.py /
+ADD requirements.txt /
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt -i $PIP_SITE --trusted-host $PIP_HOST
+EXPOSE 10012
+CMD ["./run.sh"]

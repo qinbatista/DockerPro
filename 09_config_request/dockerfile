@@ -1,0 +1,16 @@
+FROM python:3.7-slim
+RUN apt-get clean
+RUN apt-get update
+RUN apt-get install -y --no-install-recommends git
+RUN apt-get install -y nginx
+ADD config_request.py /
+ADD requirements.txt /
+ADD run.sh /
+ADD /pro/ssl_cert /ssl_cert
+COPY /pro/config_request.conf /etc/nginx/conf.d/config_request.conf
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
+RUN chmod +x run.sh
+EXPOSE 10009
+VOLUME ["/root/operationlives"]
+CMD ["./run.sh"]

@@ -1,0 +1,20 @@
+FROM python:3.7-slim
+RUN  sed -i s@/archive.ubuntu.com/@/mirrors.aliyun.com/@g /etc/apt/sources.list
+RUN  sed -i s@/deb.debian.org/@/mirrors.aliyun.com/@g /etc/apt/sources.list
+ENV  PIP_SITE http://mirrors.aliyun.com/pypi/simple/
+ENV  PIP_HOST mirrors.aliyun.com
+RUN apt-get clean
+RUN apt-get update
+RUN apt-get install -y --no-install-recommends git
+RUN apt-get install -y nginx
+ADD config_request.py /
+ADD requirements.txt /
+ADD run.sh /
+ADD /sandbox/ssl_cert /ssl_cert
+COPY /sandbox/config_request.conf /etc/nginx/conf.d/config_request.conf
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt -i $PIP_SITE --trusted-host $PIP_HOST
+RUN chmod +x run.sh
+EXPOSE 10001
+VOLUME ["/root/OperationLives"]
+CMD ["./run.sh"]

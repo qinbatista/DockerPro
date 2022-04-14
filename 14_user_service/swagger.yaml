@@ -1,0 +1,657 @@
+swagger: "2.0"
+info:
+  description: |
+    星漫游戏用户相关服务.
+  version: "1.0.0"
+  title: 星漫游戏用户服务
+  contact:
+    name: NickyWu
+schemes:
+  - http
+  - https
+paths:
+  /send_sms_code:
+    post:
+      tags:
+        - sms
+      summary: 发送短信
+      description: 发送短信,目前暂定一个号码每天发送次数不超过5次
+      produces:
+        - application/json
+      parameters:
+        - in: formData
+          name: mobile
+          description: 手机号码
+          required: true
+          type: string
+        - in: formData
+          name: type
+          description: 发送类型  1为手机号绑定; 2为手机号登录; 3为更换密码; 4为换绑手机号; 5为检验绑定的原有手机号
+          required: true
+          type: string
+      responses:
+        "200":
+          description: 服务执行正常
+          schema:
+            type: object
+            description: 返回验证码发送的结果
+            schema:
+              $ref: "#/definitions/SendSMSResult"
+        "500":
+          description: 服务出错
+        "404":
+          description: 路径不存在
+        "400":
+          description: 请求方式错误
+
+  /signup/password:
+    post:
+      tags:
+      - signup
+      summary: 注册账户
+      description: 注册账户
+      produces:
+      - application/json
+      parameters:
+      - in: formData
+        name: username
+        description: 账户名
+        required: true
+        type: string
+      - in: formData
+        name: password
+        description: 密码
+        required: true
+        type: string
+      - in: formData
+        name: device_id
+        description: 设备id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: 服务执行正常
+          schema:
+            type: object
+            description: 返回用户注册执行的结果
+            schema:
+              $ref: "#/definitions/SignupResult"
+        "500":
+          description: 服务出错
+        "404":
+          description: 路径不存在
+        "400":
+          description: 请求方式错误
+
+  /login/password:
+    post:
+      tags:
+        - login
+      summary: 用户账户名密码登录
+      description: 用户账户名密码登录
+      produces:
+        - application/json
+      parameters:
+        - in: formData
+          name: username
+          description: 账户名
+          required: true
+          type: string
+        - in: formData
+          name: password
+          description: 密码
+          required: true
+          type: string
+        - in: formData
+          name: device_id
+          description: 设备id
+          required: true
+          type: string
+      responses:
+        "200":
+          description:
+          schema:
+            type: object
+            description: 服务执行正常
+            schema:
+              $ref: "#/definitions/LoginResult"
+        "500":
+          description: 服务出错
+        "404":
+          description: 路径不存在
+        "400":
+          description: 请求方式错误
+
+  /login/mobile:
+    post:
+      tags:
+        - login
+      summary: 手机号登录
+      description: 手机号登录
+      produces:
+        - application/json
+      parameters:
+        - in: formData
+          name: mobile
+          description: 手机号码
+          required: true
+          type: string
+        - in: formData
+          name: sms_code
+          description: 手机号码收到的验证码
+          required: true
+          type: string
+        - in: formData
+          name: device_id
+          description: 设备id
+          required: true
+          type: string
+      responses:
+        "200":
+          description:
+          schema:
+            type: object
+            description: 服务执行正常
+            schema:
+              $ref: "#/definitions/LoginResult"
+        "500":
+          description: 服务出错
+        "404":
+          description: 路径不存在
+        "400":
+          description: 请求方式错误
+
+
+  /login/device_id:
+    post:
+      tags:
+        - login
+      summary: 设备id登录
+      description: 设备id登录,只能允许注册时使用的手机设备登录
+      produces:
+        - application/json
+      parameters:
+        - in: formData
+          name: device_id
+          description: 设备id
+          required: true
+          type: string
+      responses:
+        "200":
+          description:
+          schema:
+            type: object
+            description: 服务执行正常
+            schema:
+              $ref: "#/definitions/LoginResult"
+        "500":
+          description: 服务出错
+        "404":
+          description: 路径不存在
+        "400":
+          description: 请求方式错误
+
+
+  /user/bind_mobile:
+    post:
+      tags:
+        - user
+      summary: 绑定手机号
+      description: 绑定手机号
+      produces:
+        - application/json
+      parameters:
+        - in: formData
+          name: mobile
+          description: 手机号码
+          required: true
+          type: string
+        - in: formData
+          name: sms_code
+          description: 手机号码收到的验证码
+          required: true
+          type: string
+        - in: formData
+          name: username
+          description: 用户名
+          required: true
+          type: string
+      responses:
+        "200":
+          description:
+          schema:
+            type: object
+            description: 服务执行正常
+            schema:
+              $ref: "#/definitions/BindMobileResult"
+        "500":
+          description: 服务出错
+        "404":
+          description: 路径不存在
+        "400":
+          description: 请求方式错误
+
+  /user/change_mobile:
+    post:
+      tags:
+        - user
+      summary: 手机号换绑
+      description: 手机号换绑
+      produces:
+        - application/json
+      parameters:
+        - in: formData
+          name: origin_mobile
+          description: 之前绑定的手机号码
+          required: true
+          type: string
+        - in: formData
+          name: sms_code
+          description: 新手机号码收到的验证码
+          required: true
+          type: string
+        - in: formData
+          name: current_mobile
+          description: 新手机号码
+          required: true
+          type: string
+      responses:
+        "200":
+          description:
+          schema:
+            type: object
+            description: 服务执行正常
+            schema:
+              $ref: "#/definitions/ChangeMobileResult"
+        "500":
+          description: 服务出错
+        "404":
+          description: 路径不存在
+        "400":
+          description: 请求方式错误
+
+  /user/verify_mobile:
+    post:
+      tags:
+        - user
+      summary: 手机号验证
+      description: 手机号验证,主要用与手机换绑前的原手机号验证步骤
+      produces:
+        - application/json
+      parameters:
+        - in: formData
+          name: mobile
+          description: 绑定的手机号码
+          required: true
+          type: string
+        - in: formData
+          name: sms_code
+          description: 新手机号码收到的验证码
+          required: true
+          type: string
+        - in: formData
+          name: username
+          description: 用户名
+          required: true
+          type: string
+      responses:
+        "200":
+          description:
+          schema:
+            type: object
+            description: 服务执行正常
+            schema:
+              $ref: "#/definitions/VerifyMobileResult"
+        "500":
+          description: 服务出错
+        "404":
+          description: 路径不存在
+        "400":
+          description: 请求方式错误
+
+  /user/find_password:
+    post:
+      tags:
+        - user
+      summary: 找回密码
+      description: 找回密码
+      produces:
+        - application/json
+      parameters:
+        - in: formData
+          name: mobile
+          description: 绑定的手机号码
+          required: true
+          type: string
+        - in: formData
+          name: sms_code
+          description: 新手机号码收到的验证码
+          required: true
+          type: string
+        - in: formData
+          name: password
+          description: 设定的新密码
+          required: true
+          type: string
+      responses:
+        "200":
+          description:
+          schema:
+            type: object
+            description: 服务执行正常
+            schema:
+              $ref: "#/definitions/UpdatePasswordResult"
+        "500":
+          description: 服务出错
+        "404":
+          description: 路径不存在
+        "400":
+          description: 请求方式错误
+
+  /user/is_authenticated:
+    post:
+      tags:
+        - user
+      summary: 该用户是否通过实名认证
+      description: 该用户是否通过实名认证
+      produces:
+        - application/json
+      parameters:
+        - in: formData
+          name: username
+          description: 用户名
+          required: true
+          type: string
+      responses:
+        "200":
+          description:
+          schema:
+            type: object
+            description: 服务执行正常
+            schema:
+              $ref: "#/definitions/IsAuthenticatedResult"
+        "500":
+          description: 服务出错
+        "404":
+          description: 路径不存在
+        "400":
+          description: 请求方式错误
+
+  /identity/verify:
+    post:
+      tags:
+        - identity
+      summary: 身份证认证
+      description: 身份证认证
+      produces:
+        - application/json
+      parameters:
+        - in: formData
+          name: name
+          description: 身份证姓名
+          required: true
+          type: string
+        - in: formData
+          name: number
+          description: 身份证号码
+          required: true
+          type: string
+      responses:
+        "200":
+          description:
+          schema:
+            type: object
+            description: 服务执行正常
+            schema:
+              $ref: "#/definitions/VerifyIdentityResult"
+        "500":
+          description: 服务出错
+        "404":
+          description: 路径不存在
+        "400":
+          description: 请求方式错误
+
+  /identity/authenticate:
+    post:
+      tags:
+        - identity
+      summary: 实名认证
+      description: 实名认证
+      produces:
+        - application/json
+      parameters:
+        - in: formData
+          name: number
+          description: 身份证姓名
+          required: true
+          type: string
+        - in: formData
+          name: name
+          description: 身份证号码
+          required: true
+          type: string
+        - in: formData
+          name: username
+          description: 用户名
+          required: true
+          type: string
+      responses:
+        "200":
+          description:
+          schema:
+            type: object
+            description: 服务执行正常
+            schema:
+              $ref: "#/definitions/AuthenticateIdentityResult"
+        "500":
+          description: 服务出错
+        "404":
+          description: 路径不存在
+        "400":
+          description: 请求方式错误
+
+definitions:
+  SignupResult:
+    type: object
+    required:
+      - status
+      - message
+      - data
+    properties:
+      status:
+        type: integer
+        format: int64
+        description: 获取状态编码 200成功 500服务出错 404获取对象不存在 -200因与与目标对象不匹配导致执行状态失败
+      message:
+        type: string
+        format: string
+        description: 执行失败为失败原因，执行成功则为成功提示
+      data:
+        type: string
+        format: string
+        description: 返回的业务数据执行的结果，空或空字符串则为失败，1则为成功
+
+  LoginResult:
+    type: object
+    required:
+      - status
+      - message
+      - data
+    properties:
+      status:
+        type: integer
+        format: int64
+        description: 获取状态编码 200成功 500服务出错 404获取对象不存在 -200因与与目标对象不匹配导致执行状态失败
+      message:
+        type: string
+        format: string
+        description: 执行失败为失败原因，执行成功则为成功提示
+      data:
+        type: string
+        format: string
+        description: 返回的业务数据执行的结果，空或空字符串则为失败，成功则为一段加密的字符串即token，用作登录状态验证
+
+
+  BindMobileResult:
+    type: object
+    required:
+      - status
+      - message
+      - data
+    properties:
+      status:
+        type: integer
+        format: int64
+        description: 获取状态编码 200成功 500服务出错 404获取对象不存在 -200因与与目标对象不匹配导致执行状态失败
+      message:
+        type: string
+        format: string
+        description: 执行失败为失败原因，执行成功则为成功提示
+      data:
+        type: string
+        format: string
+        description: 返回的业务数据执行的结果，空或空字符串则为失败，成功则为绑定的手机号码
+
+
+  UpdatePasswordResult:
+    type: object
+    required:
+      - status
+      - message
+      - data
+    properties:
+      status:
+        type: integer
+        format: int64
+        description: 获取状态编码 200成功 500服务出错 404获取对象不存在 -200因与与目标对象不匹配导致执行状态失败
+      message:
+        type: string
+        format: string
+        description: 执行失败为失败原因，执行成功则为成功提示
+      data:
+        type: string
+        format: string
+        description: 返回的业务数据执行的结果，空或空字符串则为失败，成功则为新设定的密码
+
+
+  VerifyMobileResult:
+    type: object
+    required:
+      - status
+      - message
+      - data
+    properties:
+      status:
+        type: integer
+        format: int64
+        description: 获取状态编码 200成功 500服务出错 404获取对象不存在 -200因与与目标对象不匹配导致执行状态失败
+      message:
+        type: string
+        format: string
+        description: 执行失败为失败原因，执行成功则为成功提示
+      data:
+        type: string
+        format: string
+        description: 返回的业务数据执行的结果，空或空字符串则为失败，成功则为新绑定的手机号码
+
+
+  ChangeMobileResult:
+    type: object
+    required:
+      - status
+      - message
+      - data
+    properties:
+      status:
+        type: integer
+        format: int64
+        description: 获取状态编码 200成功 500服务出错 404获取对象不存在 -200因与与目标对象不匹配导致执行状态失败
+      message:
+        type: string
+        format: string
+        description: 执行失败为失败原因，执行成功则为成功提示
+      data:
+        type: string
+        format: string
+        description: 返回的业务数据执行的结果，空或空字符串则为失败，成功则为新绑定的手机号码
+
+  IsAuthenticatedResult:
+    type: object
+    required:
+      - status
+      - message
+      - data
+    properties:
+      status:
+        type: integer
+        format: int64
+        description: 获取状态编码 200已通过实名认证 500服务出错 404获取对象不存在 -200未通过实名认证
+      message:
+        type: string
+        format: string
+        description: 执行失败为失败原因，执行成功则为成功提示
+      data:
+        type: string
+        format: string
+        description: 返回的业务数据执行的结果，False或空字符串则为失败，成功则为True
+
+
+  VerifyIdentityResult:
+    type: object
+    required:
+      - status
+      - message
+      - data
+    properties:
+      status:
+        type: integer
+        format: int64
+        description: 获取状态编码 200已通过验证 500服务出错 404获取对象不存在 -200验证未通过
+      message:
+        type: string
+        format: string
+        description: 执行失败为失败原因，执行成功则为成功提示
+      data:
+        type: string
+        format: string
+        description: 返回的业务数据执行的结果，False或空字符串则为失败，成功则为True
+
+  AuthenticateIdentityResult:
+    type: object
+    required:
+      - status
+      - message
+      - data
+    properties:
+      status:
+        type: integer
+        format: int64
+        description: 获取状态编码 200已通过实名认证 500服务出错 404获取对象不存在 -200验证未通过
+      message:
+        type: string
+        format: string
+        description: 执行失败为失败原因，执行成功则为成功提示
+      data:
+        type: string
+        format: string
+        description: 返回的业务数据执行的结果，False或空字符串则为失败，成功则为True
+
+  SendSMSResult:
+    type: object
+    required:
+      - status
+      - message
+      - data
+    properties:
+      status:
+        type: integer
+        format: int64
+        description: 获取状态编码 200发送验证码成功 500服务出错 404获取对象不存在 -200发送验证码通过
+      message:
+        type: string
+        format: string
+        description: 执行失败为失败原因，执行成功则为成功提示
+      data:
+        type: string
+        format: string
+        description: 返回的业务数据执行的结果，False或空字符串则为失败，成功则为True

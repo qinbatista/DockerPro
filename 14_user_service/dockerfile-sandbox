@@ -1,0 +1,22 @@
+FROM python:3.7-slim
+RUN  sed -i s@/archive.ubuntu.com/@/mirrors.aliyun.com/@g /etc/apt/sources.list
+RUN  sed -i s@/deb.debian.org/@/mirrors.aliyun.com/@g /etc/apt/sources.list
+ENV  PIP_SITE http://mirrors.aliyun.com/pypi/simple/
+ENV  PIP_HOST mirrors.aliyun.com
+RUN  apt-get clean
+RUN  apt-get update && apt-get install -y nginx
+COPY /sandbox/user_service.conf.conf /etc/nginx/conf.d/user_service.conf.conf
+ADD /sandbox/ssl_cert /ssl_cert
+ADD config  /config
+ADD data  /data
+ADD service /service
+ADD utils /utils
+ADD run.sh /
+ADD main.py /
+ADD requirements.txt /
+ADD swagger.yaml  /
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt -i $PIP_SITE --trusted-host $PIP_HOST
+RUN chmod +x run.sh
+EXPOSE 10014
+CMD [ "./run.sh"]

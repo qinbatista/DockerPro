@@ -1,0 +1,59 @@
+RECORD_LOGIN_TIME_PERIOD = 60 * 60 * 24
+
+IDCARD_AUDIT_URL = "https://pidysc2zx.market.alicloudapi.com/pidinfo/ysc2zx"
+IDCARD_AUDIT_AUTHORIZATION_CODE = "APPCODE 583d11c3eea249c5adecc5e7822d0ebb"
+
+AES_KEY = "123456"
+
+MD5_KEY = "69243860938950217697"
+
+CACHE_DAY = 60 * 60 * 24
+CHCHE_WEEK = 60 * 60 * 24 * 7
+CHCHE_MINUTE = 60
+
+TOKEN_MAX_CACHE_TIME = CHCHE_WEEK
+
+MAX_SMS_CODE_CACHE_TIME = CHCHE_MINUTE * 5
+
+MAX_SMS_SEND_COUNT_IN_DAY = 5
+
+
+class AliYun:
+    ACCESS_KEY_ID = "LTAI4G57nGMcurZj7wowkxvz"
+    ACCESS_SECRET = "AXzLha42PwJLNOXRYRgZFIkDrPwMnE"
+    REGION_ID = "cn-hangzhou"
+    SIGN_NAME = "重庆星漫"
+    DOMAIN = "dysmsapi.aliyuncs.com"
+    VERSION = "2017-05-25"
+
+
+class SMS_TYPE:
+    BIND = 1
+    LOGIN = 2
+    CHANGE_PASSWORD = 3
+    CHANGE_MOBILE = 4
+    VERIFY_MOBILE = 5
+
+
+class SMS_TEMPLATE:
+    BIND = "SMS_205464425"
+
+    LOGIN = "SMS_205459567"
+
+    CHANGE_PASSWORD = "SMS_205459569"
+
+    CHANGE_MOBILE = "SMS_205474328"
+
+    VERIFY_MOBILE = "SMS_205464714"
+
+    mapping = {
+        SMS_TYPE.BIND: BIND,
+        SMS_TYPE.LOGIN: LOGIN,
+        SMS_TYPE.CHANGE_PASSWORD: CHANGE_PASSWORD,
+        SMS_TYPE.CHANGE_MOBILE: CHANGE_MOBILE,
+        SMS_TYPE.VERIFY_MOBILE: VERIFY_MOBILE
+    }
+
+    @classmethod
+    def type(cls, sms_type):
+        return cls.mapping[int(sms_type)]

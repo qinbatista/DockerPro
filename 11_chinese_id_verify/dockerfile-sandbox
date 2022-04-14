@@ -1,0 +1,19 @@
+FROM python:3.7-slim
+RUN  sed -i s@/archive.ubuntu.com/@/mirrors.aliyun.com/@g /etc/apt/sources.list
+RUN  sed -i s@/deb.debian.org/@/mirrors.aliyun.com/@g /etc/apt/sources.list
+ENV  PIP_SITE http://mirrors.aliyun.com/pypi/simple/
+ENV  PIP_HOST mirrors.aliyun.com
+RUN  apt-get clean
+RUN  apt-get update && apt-get install -y nginx
+ADD sandbox/ssl_cert /ssl_cert
+ADD Chinese_ID_verify.py /
+ADD requirements.txt /
+ADD run.sh /
+RUN chmod +x run.sh
+COPY sandbox/chinese_id_verify.conf /etc/nginx/conf.d/chinese_id_verify.conf
+RUN apt-get update
+RUN apt-get install -y --no-install-recommends curl
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt -i $PIP_SITE --trusted-host $PIP_HOST
+EXPOSE 10011
+CMD ["./run.sh"]

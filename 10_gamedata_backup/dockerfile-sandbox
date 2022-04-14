@@ -1,0 +1,17 @@
+FROM python:3.7-slim
+RUN  sed -i s@/archive.ubuntu.com/@/mirrors.aliyun.com/@g /etc/apt/sources.list
+RUN  sed -i s@/deb.debian.org/@/mirrors.aliyun.com/@g /etc/apt/sources.list
+ENV  PIP_SITE http://mirrors.aliyun.com/pypi/simple/
+ENV  PIP_HOST mirrors.aliyun.com
+RUN  apt-get clean
+RUN  apt-get update && apt-get install -y nginx
+ADD gamedata_backup.py /
+ADD requirements.txt /
+ADD sandbox/ssl_cert /ssl_cert
+ADD run.sh /
+COPY sandbox/gamedata_backup.conf /etc/nginx/conf.d/gamedata_backup.conf
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt -i $PIP_SITE --trusted-host $PIP_HOST
+RUN chmod +x run.sh
+EXPOSE 10010
+CMD ["./run.sh"]

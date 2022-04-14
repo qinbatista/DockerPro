@@ -1,0 +1,858 @@
+swagger: "2.0"
+info:
+  description: |
+    星漫游戏支付相关服务.
+  version: "1.0.0"
+  title: 星漫游戏支付服务
+  contact:
+    name: NickyWu
+schemes:
+  - http
+  - https
+paths:
+  /order/undelivered:
+    get:
+      tags:
+      - order
+      summary: 获取该玩家未成功发货的订单
+      description: 获取该玩家未成功发货的订单
+      produces:
+      - application/json
+      parameters:
+      - in: query
+        name: user_id
+        description: 用户id，一般为用户手机的设备号
+        required: true
+        type: string
+      responses:
+        "200":
+          description: 获取到用户订单
+          schema:
+            type: object
+            description: 返回用户订单
+            schema:
+              $ref: "#/definitions/Orders"
+        "500":
+          description: 服务出错
+        "404":
+          description: 路径不存在
+        "400":
+          description: 请求方式错误
+
+  /order/deliver:
+    post:
+      tags:
+        - order
+      summary: 更新用户订单为发货状态
+      description: 更新用户订单为发货状态
+      produces:
+        - application/json
+      parameters:
+        - in: formData
+          name: user_id
+          description: 用户id
+          required: true
+          type: string
+        - in: formData
+          name: order_id
+          description: 订单id
+          required: true
+          type: string
+      responses:
+        "200":
+          description: 更新用户订单为发货状态
+          schema:
+            type: object
+            description: 返回用户订单更新为发货状态是否成功
+            schema:
+              $ref: "#/definitions/OrderStatus"
+        "500":
+          description: 服务出错
+        "404":
+          description: 路径不存在
+        "400":
+          description: 请求方式错误
+
+
+  /{game_name}/{pay_type}/client_success_callback:
+    post:
+      tags:
+        - client_success_callback
+      summary: 第三方支付平台支付异步通知回调服务
+      description: 第三方支付平台支付异步通知回调服务,路径参数为sdk包配置的游戏名称和支付平台。
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: game_name
+          description: 游戏名称
+          required: true
+          type: string
+        - in: path
+          name: pay_type
+          description: 支付平台 alipay为支付宝 wxpay为微信
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: 此外第三方支付平台传递的具体业务参数,根据不同的支付平台接受不同的业务参数,具体的业务参数可以参考支付平台sdk文档：1. 支付宝：https://opendocs.alipay.com/open/270/1059022. 微信：https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_7
+          required: true
+          type: string
+      responses:
+        "200":
+          description: 根据不同的支付平台返回不同的业务响应结果,具体的业务响应结果可以参考支付平台sdk文档：1.支付宝：https://opendocs.alipay.com/open/270/1059022. 2.微信：https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_7
+        "500":
+          description: 服务出错
+        "404":
+          description: 路径不存在
+        "400":
+          description: 请求方式错误
+
+  /order/refunded:
+    get:
+      tags:
+        - order
+      summary: 获取该玩家退货的订单
+      description: 获取该玩家退货的订单
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: user_id
+          description: 用户id，一般为用户手机的设备号
+          required: true
+          type: string
+      responses:
+        "200":
+          description: 获取到用户订单
+          schema:
+            type: object
+            description: 返回用户订单
+            schema:
+              $ref: "#/definitions/Orders"
+        "500":
+          description: 服务出错
+        "404":
+          description: 路径不存在
+        "400":
+          description: 请求方式错误
+
+  /order/refund:
+    post:
+      tags:
+        - order
+      summary: 更新用户订单为退货状态
+      description: 更新用户订单为退货状态
+      produces:
+        - application/json
+      parameters:
+        - in: formData
+          name: user_id
+          description: 用户id
+          required: false
+          type: string
+        - in: formData
+          name: order_id
+          description: 订单id
+          required: false
+          type: string
+        - in: formData
+          name: game_name
+          description: 游戏名称
+          required: false
+          type: string
+        - in: formData
+          name: channel
+          description: 渠道名称
+          required: false
+          type: string
+        - in: formData
+          name: channel_order_id
+          description: 渠道方订单id
+          required: false
+          type: string
+      responses:
+        "200":
+          description: 更新用户订单为退货状态
+          schema:
+            type: object
+            description: 返回用户订单更新为退货状态是否成功
+            schema:
+              $ref: "#/definitions/OrderStatus"
+        "500":
+          description: 服务出错
+        "404":
+          description: 路径不存在
+        "400":
+          description: 请求方式错误
+
+  /order/cancel:
+    post:
+      tags:
+        - order
+      summary: 更新用户订单为取消状态
+      description: 更新用户订单为取消状态
+      produces:
+        - application/json
+      parameters:
+        - in: formData
+          name: user_id
+          description: 用户id
+          required: true
+          type: string
+        - in: formData
+          name: order_id
+          description: 订单id
+          required: true
+          type: string
+      responses:
+        "200":
+          description: 更新用户订单为取消状态
+          schema:
+            type: object
+            description: 返回用户订单更新为取消状态是否成功
+            schema:
+              $ref: "#/definitions/OrderStatus"
+        "500":
+          description: 服务出错
+        "404":
+          description: 路径不存在
+        "400":
+          description: 请求方式错误
+
+
+  /user:
+    get:
+      tags:
+        - user
+      summary: 获取登陆的用户记录
+      description: 获取登陆的用户记录
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: unique_id
+          description: 用户唯一id
+          required: true
+          type: string
+        - in: query
+          name: game_name
+          description: 游戏名
+          required: true
+          type: string
+        - in: query
+          name: channel
+          description: 渠道名
+          required: true
+          type: string
+      responses:
+        "200":
+          description: 获取到的登陆的用户
+          schema:
+            type: object
+            description: 返回是否成功获取到登陆的用户
+            schema:
+              $ref: "#/definitions/UserRecordStatus"
+        "500":
+          description: 服务出错
+        "404":
+          description: 路径不存在
+        "400":
+          description: 请求方式错误
+
+  /game_expiry:
+    get:
+      tags:
+        - game_expiry
+      summary: 获取游戏有效登陆和支付日期
+      description: 获取游戏有效登陆和支付日期
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: game_name
+          description: 游戏名
+          required: true
+          type: string
+        - in: query
+          name: channel
+          description: 渠道名
+          required: true
+          type: string
+      responses:
+        "200":
+          description: 获取游戏有效登陆和支付日期
+          schema:
+            type: object
+            description: 返回是否成功获取游戏有效登陆和支付日期
+            schema:
+              $ref: "#/definitions/GameExpiry"
+        "500":
+          description: 服务出错
+        "404":
+          description: 路径不存在
+        "400":
+          description: 请求方式错误
+
+    delete:
+      tags:
+        - game_expiry
+      summary: 删除游戏有效登陆和支付日期
+      description: 删除游戏有效登陆和支付日期
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: game_name
+          description: 游戏名
+          required: true
+          type: string
+        - in: query
+          name: channel
+          description: 渠道名
+          required: true
+          type: string
+      responses:
+        "200":
+          description: 删除游戏有效登陆和支付日期
+          schema:
+            type: object
+            description: 返回是否成功删除游戏有效登陆和支付日期
+            schema:
+              $ref: "#/definitions/GameExpiry"
+        "500":
+          description: 服务出错
+        "404":
+          description: 路径不存在
+        "400":
+          description: 请求方式错误
+
+    post:
+      tags:
+        - game_expiry
+      summary: 添加游戏有效登陆和支付日期
+      description: 添加游戏有效登陆和支付日期
+      produces:
+        - application/json
+      parameters:
+        - in: formData
+          name: game_name
+          description: 游戏名
+          required: true
+          type: string
+        - in: formData
+          name: channel
+          description: 渠道名
+          required: true
+          type: string
+        - in: formData
+          name: login_expiry_date
+          description:  允许登陆的最后期限
+          required: true
+          type: string
+        - in: formData
+          name: pay_expiry_date
+          description:  允许支付的最后期限
+          required: true
+          type: string
+      responses:
+        "200":
+          description: 添加游戏有效登陆和支付日期
+          schema:
+            type: object
+            description: 返回是否成功添加游戏有效登陆和支付日期
+            schema:
+              $ref: "#/definitions/GameExpiryStatus"
+        "500":
+          description: 服务出错
+        "404":
+          description: 路径不存在
+        "400":
+          description: 请求方式错误
+
+    put:
+      tags:
+        - game_expiry
+      summary: 更新游戏有效登陆和支付日期
+      description: 更新游戏有效登陆和支付日期
+      produces:
+        - application/json
+      parameters:
+        - in: formData
+          name: game_name
+          description: 游戏名
+          required: true
+          type: string
+        - in: formData
+          name: channel
+          description: 渠道名
+          required: true
+          type: string
+        - in: formData
+          name: login_expiry_date
+          description:  允许登陆的最后期限
+          required: true
+          type: string
+        - in: formData
+          name: pay_expiry_date
+          description:  允许支付的最后期限
+          required: true
+          type: string
+      responses:
+        "200":
+          description: 添加游戏有效登陆和支付日期
+          schema:
+            type: object
+            description: 返回是否成功添加游戏有效登陆和支付日期
+            schema:
+              $ref: "#/definitions/GameExpiryStatus"
+        "500":
+          description: 服务出错
+        "404":
+          description: 路径不存在
+        "400":
+          description: 请求方式错误
+
+
+  /user/is_login_permitted:
+    post:
+      tags:
+        - user
+      summary:  获取到用户的登陆许可
+      description:  获取到用户的登陆许可
+      produces:
+        - application/json
+      parameters:
+        - in: formData
+          name: unique_id
+          description: 用户唯一id
+          required: true
+          type: string
+        - in: formData
+          name: game_name
+          description: 游戏名
+          required: true
+          type: string
+        - in: formData
+          name: channel
+          description: 渠道名
+          required: true
+          type: string
+      responses:
+        "200":
+          description: 获取到用户的登陆许可
+          schema:
+            type: object
+            description: 返回是否成功获取到用户的登陆许可
+            schema:
+              $ref: "#/definitions/UserLoginPermitionStatus"
+        "500":
+          description: 服务出错
+        "404":
+          description: 路径不存在
+        "400":
+          description: 请求方式错误
+
+  /user/set_login_permition:
+    post:
+      tags:
+        - user
+      summary: 修改用户的登陆许可
+      description: 修改用户的登陆许可
+      produces:
+        - application/json
+      parameters:
+        - in: formData
+          name: unique_id
+          description: 用户唯一id
+          required: true
+          type: string
+        - in: formData
+          name: game_name
+          description: 游戏名
+          required: true
+          type: string
+        - in: formData
+          name: channel
+          description: 渠道名
+          required: true
+          type: string
+        - in: formData
+          name: permition
+          description: 许可 0可登陆 -1不可登陆 1需要绑定
+          required: true
+          type: string
+      responses:
+        "200":
+          description: 修改用户的登陆许可是否成功
+          schema:
+            type: object
+            description: 返回是否成功修改用户的登陆许可
+            schema:
+              $ref: "#/definitions/UserLoginPermitionStatus"
+        "500":
+          description: 服务出错
+        "404":
+          description: 路径不存在
+        "400":
+          description: 请求方式错误
+
+  /user/is_pay_permitted:
+    post:
+      tags:
+        - user
+      summary:  获取到用户的支付许可
+      description:  获取到用户的支付许可
+      produces:
+        - application/json
+      parameters:
+        - in: formData
+          name: unique_id
+          description: 用户唯一id
+          required: true
+          type: string
+        - in: formData
+          name: game_name
+          description: 游戏名
+          required: true
+          type: string
+        - in: formData
+          name: channel
+          description: 渠道名
+          required: true
+          type: string
+      responses:
+        "200":
+          description: 成功获取到用户的支付许可
+          schema:
+            type: object
+            description: 返回是否成功获取到用户的支付许可
+            schema:
+              $ref: "#/definitions/UserPayPermitionStatus"
+        "500":
+          description: 服务出错
+        "404":
+          description: 路径不存在
+        "400":
+          description: 请求方式错误
+
+  /user/set_pay_permition:
+    post:
+      tags:
+        - user
+      summary: 修改用户的支付许可
+      description: 修改用户的支付许可
+      produces:
+        - application/json
+      parameters:
+        - in: formData
+          name: unique_id
+          description: 用户唯一id
+          required: true
+          type: string
+        - in: formData
+          name: game_name
+          description: 游戏名
+          required: true
+          type: string
+        - in: formData
+          name: channel
+          description: 渠道名
+          required: true
+          type: string
+        - in: formData
+          name: permition
+          description: 许可 1可支付 -1不可支付
+          required: true
+          type: string
+      responses:
+        "200":
+          description: 修改用户的登陆支付是否成功
+          schema:
+            type: object
+            description: 返回是否成功修改用户的支付许可
+            schema:
+              $ref: "#/definitions/UserPayPermitionStatus"
+        "500":
+          description: 服务出错
+        "404":
+          description: 路径不存在
+        "400":
+          description: 请求方式错误
+
+
+  /user/update_login_time:
+    put:
+      tags:
+        - user
+      summary: 更新用户的登录时间
+      description: 更新用户的登录时间
+      produces:
+        - application/json
+      parameters:
+        - in: formData
+          name: unique_id
+          description: 用户唯一id
+          required: true
+          type: string
+        - in: formData
+          name: game_name
+          description: 游戏名
+          required: true
+          type: string
+        - in: formData
+          name: channel
+          description: 渠道名
+          required: true
+          type: string
+      responses:
+        "200":
+          description: 更新用户的登录时间是否成功
+          schema:
+            type: object
+            description: 返回是否成功更新用户的支付时间
+            schema:
+              $ref: "#/definitions/UpdateLoginTimeStatus"
+        "500":
+          description: 服务出错
+        "404":
+          description: 路径不存在
+        "400":
+          description: 请求方式错误
+
+definitions:
+  UserLoginPermitionStatus:
+    type: object
+    required:
+      - status
+      - message
+      - data
+    properties:
+      status:
+        type: integer
+        format: int64
+        description: 获取或修改登陆用户的登陆许可是否成功编码，200表示成功，404表示该订单不存在，500表示服务错误
+      message:
+        type: string
+        format: string
+        description: 获取或修改登陆用户的登陆许可是否成功提示
+      data:
+        type: integer
+        format: int64
+        description: 获取得到的许可 1需要绑定 0允许登陆 -1 不允许登陆
+
+
+  UserPayPermitionStatus:
+    type: object
+    required:
+      - status
+      - message
+      - data
+    properties:
+      status:
+        type: integer
+        format: int64
+        description: 获取或修改登陆用户的支付许可是否成功编码，200表示成功，404表示该订单不存在，500表示服务错误
+      message:
+        type: string
+        format: string
+        description: 获取或修改登陆用户的支付许可是否成功编码
+      data:
+        type: integer
+        format: int64
+        description: 获取得到的许可 1允许支付 -1 不允许支付
+
+  UpdateLoginTimeStatus:
+    type: object
+    required:
+      - status
+      - message
+      - data
+    properties:
+      status:
+        type: integer
+        format: int64
+        description: 更新用户登录时间的是否成功编码，200表示成功，404表示该订单不存在，500表示服务错误
+      message:
+        type: string
+        format: string
+        description: 更新用户登录时间的是否成功编码信息
+      data:
+        type: string
+        format: string
+        description: 更新用户登录时间得到的时间
+
+  UserRecordStatus:
+    type: object
+    required:
+      - status
+      - message
+      - data
+    properties:
+      status:
+        type: integer
+        format: int64
+        description: 获取到的登陆的用户是否成功编码，200表示成功，404表示该订单不存在，500表示服务错误
+      message:
+        type: string
+        format: string
+        description: 获取到的登陆的用户是否成功提示
+      data:
+        type: array
+        items:
+            $ref: "#/definitions/UserRecord"
+        description: 返回的业务数据，空则为获取不到该数据
+
+  UserRecord:
+    type: object
+    properties:
+      unique_id:
+        type: string
+        format: string
+        description: 用户唯一id
+      channel:
+        type: string
+        format: string
+        description: 渠道名
+      game_name:
+        type: string
+        format: string
+        description: 游戏名
+      is_login_permitted:
+        type: integer
+        format: int32
+        description: 是否允许登陆 0允许登陆 -1不允许登陆 1需要绑定才能登陆
+      is_pay_permitted:
+        type: integer
+        format: int32
+        description: 是否允许支付 -1不允许支付 1允许支付
+      first_login_time:
+        type: string
+        format: string
+        description: 第一次登陆时间
+      last_login_time:
+        type: string
+        format: string
+        description: 最近一次登录时间
+
+
+  Orders:
+    type: object
+    required:
+      - status
+      - message
+      - data
+    properties:
+      status:
+        type: integer
+        format: int64
+        description: 获取订单状态编码 200成功 500服务出错
+      message:
+        type: string
+        format: string
+        description: 获取订单是否成功提示
+      data:
+        type: array
+        items:
+          $ref: "#/definitions/Order"
+        description: 返回的业务数据，空则为获取不到该数据
+
+  OrderStatus:
+    type: object
+    required:
+      - status
+      - message
+      - data
+    properties:
+      status:
+        type: integer
+        format: int64
+        description: 更新的订单是否成功编码，200表示成功，404表示该订单不存在，500表示服务错误
+      message:
+        type: string
+        format: string
+        description: 更新的订单是否成功提示
+      data:
+        type: integer
+        format: int64
+        description: 更新是否成功，返回1表示更新成功，返回0表示订单不存在，返回false表示服务错误
+
+  Order:
+    type: object
+    properties:
+      order_id:
+        type: string
+        format: string
+        description: 订单id
+      channel:
+        type: string
+        format: string
+        description: 平台
+      price:
+        type: number
+        format: float
+        description: 价格
+      des:
+        type: string
+        format: string
+        description: 订单介绍
+      production_id:
+        type: string
+        format: string
+        description: 产品id
+      user_id:
+        type: string
+        format: string
+        description: 用户id
+      claimed:
+        type: integer
+        format: int32
+        description: 是否发货 0为未发货 1为发货 -1为退货 -2为取消
+      payment:
+        type: integer
+        format: int32
+        description: 支付方式
+      game_name:
+        type: string
+        format: string
+        description: 游戏名称
+
+  GameExpiryStatus:
+    type: object
+    required:
+      - status
+      - message
+      - data
+    properties:
+      status:
+        type: integer
+        format: int64
+        description: 操作游戏有效日期是否成功编码，200表示成功，404表示该订单不存在，500表示服务错误
+      message:
+        type: string
+        format: string
+        description: 操作游戏有效日期是否成功提示
+      data:
+        type: integer
+        format: int64
+        description: 操作游戏有效日期是否成功，返回true表示操作成功，返回0表示数据不存在，返回false表示服务错误
+
+  GameExpiry:
+    type: object
+    properties:
+      game_name:
+        type: string
+        format: string
+        description: 游戏名称
+      channel:
+        type: string
+        format: string
+        description: 平台
+      login_expiry_date:
+        type: string
+        format: string
+        description: 允许登陆的最后期限
+      pay_expiry_date:
+        type: string
+        format: string
+        description: 允许支付的最后期限

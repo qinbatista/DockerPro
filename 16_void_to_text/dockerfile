@@ -1,0 +1,4 @@
+FROM python:3.7-alpine
+ADD photo_manager.py /
+VOLUME ["/photo_manager"]
+CMD [ "python" ,"/photo_manager.py"]

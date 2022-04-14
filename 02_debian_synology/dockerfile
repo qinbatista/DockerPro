@@ -1,0 +1,40 @@
+FROM debian
+ADD * ./
+COPY libsodium-1.0.10.tar.gz ./libsodium-1.0.10.tar.gz
+COPY build_git_server.py ./root/build_git_server.py
+
+RUN apt-get update
+RUN apt-get -y install python3 rsync python3-distutils sudo git tar build-essential ssh aria2 screen ssh make gcc sudo vim wget curl proxychains locales
+
+#install youtube-dl
+RUN python3 get-pip.py
+RUN pip3 install youtube-dl instagram-scraper
+RUN mkdir ~/.ssh/
+RUN touch ~/.ssh/authorized_keys
+#echo yourpublickey>>~/.ssh/authorized_keys
+#install ssr
+RUN chmod +x ./ssr
+RUN mv ./ssr /usr/local/sbin/
+RUN ssr install
+#set config
+COPY config.json /root/.local/share/shadowsocksr/config.json
+COPY sshd_config /root/ssh/sshd_config
+COPY proxychains.conf /etc/proxychains.conf
+#build libsodium-1.0.10
+RUN tar xzvf ./libsodium-1.0.10.tar.gz
+RUN ./libsodium-1.0.10/configure
+RUN make -j8 && make install
+RUN echo /usr/local/lib > /etc/ld.so.conf.d/usr_local_lib.conf
+RUN ldconfig
+
+#set for aria2
+RUN mkdir ~/.aria2
+RUN touch ~/.aria2/aria2.session
+RUN touch ~/.aria2/aria2.log
+RUN mv ./aria2.conf ~/.aria2/aria2.conf
+RUN echo ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQD25f9wjWwVxBiEz8KRA81MzQ4TLIp7rv8Cuim31DidcaIfWeCdqGLfoniik5RAMXGSX5xRufWwd2yAub/z5d11TGN1ei3Tz/u3Z2eY+rJlF1vHP1E5DLEz2p7dA9w0H7hjs1swLeIlQnQHHQRQULum29VJxuXFJLg6kdIeJGsq4YGXKtwvC4r8J0GdoZeXTEOCu9CMYjbNgRw3V4Rfr0sXWC8pvrdWUH8GxkYto29CBF9nX0JcZMjtMWeP1rMNwSgw3+/2vydsIXVsD+jcxVXTL6NqgU5n9UWd93sFrFPFIK3XmofEFfYrYKSyYwF9bJccPaEhaQbdPgMLk5D8/e6z root@qinbatista-debian_synology1 >>  ~/.ssh/authorized_keys
+
+VOLUME [ "/root/download","/Repositories"]
+WORKDIR /root
+EXPOSE 22
+CMD ["python3","/docker_server.py"]

@@ -1,0 +1,6 @@
+FROM python:3.7-alpine
+ADD requirements.txt /
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
+ADD * /
+CMD [ "python" ,"/cq_qinyupeng_com_client.py"]

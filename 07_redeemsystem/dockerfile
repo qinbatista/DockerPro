@@ -1,0 +1,17 @@
+FROM python:3.7-slim
+RUN  apt-get clean
+RUN  apt-get update && apt-get install -y nginx
+RUN  apt-get install -y git
+RUN  git config --global user.email "you@example.com"
+run  git config --global user.name "Your Name"
+ADD redeem.py /
+ADD requirements.txt /
+ADD run.sh /
+ADD /pro/ssl_cert /ssl_cert
+COPY /pro/redeem.conf /etc/nginx/conf.d/redeem.conf
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
+RUN chmod +x run.sh
+EXPOSE 10007/udp 10007/tcp
+VOLUME ["/root/redeemsystem", "/root/operationlives"]
+CMD [ "./run.sh"]
